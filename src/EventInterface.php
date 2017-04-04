@@ -18,4 +18,18 @@ namespace Phower\Events;
  */
 interface EventInterface
 {
+
+    /**
+     * Get event name.
+     *
+     * @return string
+     */
+    public function getName();
+
+    /**
+     * Get all event params as array.
+     *
+     * @return array
+     */
+    public function toArray();
 }
