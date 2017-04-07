@@ -99,11 +99,7 @@ class EventHandler implements EventHandlerInterface
             return $this->sorted[$name];
         }
 
-        foreach ($this->listeners as $name => $eventListeners) {
-            if (!isset($this->sorted[$name])) {
-                $this->sortListeners($name);
-            }
-        }
+        $this->sortListeners();
 
         return $this->sorted;
     }
@@ -156,9 +152,20 @@ class EventHandler implements EventHandlerInterface
      *
      * @param string $name
      * */
-    protected function sortListeners($name)
+    protected function sortListeners($name = null)
     {
+        if (null === $name) {
+            foreach ($this->listeners as $name => $listener) {
+                if (!isset($this->sorted[$name])) {
+                    $this->sortListeners($name);
+                }
+            }
+
+            return;
+        }
+
         krsort($this->listeners[$name]);
         $this->sorted[$name] = call_user_func_array('array_merge', $this->listeners[$name]);
     }
+
 }
