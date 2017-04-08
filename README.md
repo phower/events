@@ -23,7 +23,41 @@ composer require phower/events
 Usage
 =====
 
-TBC
+This package provides an event-oriented mechanism which allows any PHP application to implement
+a way for separated parts to communicate with each other by dispatching events and listening to them.
+
+An implementation of PhowerEvents requires an EventHandler class and at least an event listener which
+must be any valud [PHP callable](http://php.net/manual/en/language.types.callable.php):
+
+```bash
+use Phower\Events\EventHandlerInterface;
+use Phower\Events\EventInterface;
+
+class MyEventListener
+{
+    public onDummyEvent(EventInterface $event, EventHandlerInterface $handler)
+    {
+        print_r($event->getName());
+        print_r($handler->getListeners($event));
+    }
+}
+```
+
+> Note that any listener method should always expect two arguments:
+> 1. An instance of `EventInterface`, representing the event triggered;
+> 2. An intance of `EventHandlerInterface`, the handler which have triggered that event.
+
+Before being able to trigger the listner above we must to attach it to an handler instance:
+
+```bash
+use Phower\Events\EventHandler;
+
+$handler = new EventHandler();
+$handler->addListener('dummy', 'MyEventListener::onDummyEvent');
+
+// later at any point where the handler is available:
+$handler->trigger('dummy');
+```
 
 Running Tests
 -------------
