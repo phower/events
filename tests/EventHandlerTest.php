@@ -24,8 +24,8 @@ class EventHandlerTest extends \PHPUnit_Framework_TestCase
         $self = $this;
 
         $event = 'some event';
-        $listener = function (EventInterface $event, EvntHandlerInterface $handler) use ($self) {
-            $self->assertEquals(1, count($event, $handler->getListeners($event)));
+        $listener = function (EventInterface $event, EventHandlerInterface $handler) use ($self) {
+            $self->assertEquals(1, count($handler->getListeners($event)));
         };
         $handler->addListener($event, $listener);
         $this->assertTrue(in_array($listener, $handler->getListeners($event)));
@@ -48,8 +48,8 @@ class EventHandlerTest extends \PHPUnit_Framework_TestCase
         $self = $this;
 
         $event = 'some event';
-        $listener = function (EventInterface $event, EvntHandlerInterface $handler) use ($self) {
-            $self->assertEquals(1, count($event, $handler->getListeners($event)));
+        $listener = function (EventInterface $event, EventHandlerInterface $handler) use ($self) {
+            $self->assertEquals(1, count($handler->getListeners($event)));
         };
         $handler->addListener($event, $listener);
         $this->assertTrue(in_array($listener, $handler->getListeners($event)));
@@ -64,8 +64,8 @@ class EventHandlerTest extends \PHPUnit_Framework_TestCase
         $self = $this;
 
         $event = 'some event';
-        $listener = function (EventInterface $event, EvntHandlerInterface $handler) use ($self) {
-            $self->assertEquals(1, count($event, $handler->getListeners($event)));
+        $listener = function (EventInterface $event, EventHandlerInterface $handler) use ($self) {
+            $self->assertEquals(1, count($handler->getListeners($event)));
         };
 
         $handler->addListener($event, $listener);
@@ -75,4 +75,80 @@ class EventHandlerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(1, count($handler->getListeners()));
     }
 
+    public function testGetListenersReturnsOrderedArrayOfListenersOfGivenEvent()
+    {
+        $handler = new EventHandler();
+        $self = $this;
+
+        $event = 'some event';
+        $listener1 = function (EventInterface $event, EventHandlerInterface $handler) use ($self) {
+            $self->assertEquals(1, count($handler->getListeners($event)));
+        };
+        $listener2 = function (EventInterface $event, EventHandlerInterface $handler) use ($self) {
+            $self->assertEquals(1, count($handler->getListeners($event)));
+        };
+        $listener3 = function (EventInterface $event, EventHandlerInterface $handler) use ($self) {
+            $self->assertEquals(1, count($handler->getListeners($event)));
+        };
+
+        $handler->addListener($event, $listener1, 1);
+        $handler->addListener($event, $listener2, 3);
+        $handler->addListener($event, $listener3, 2);
+
+        $expected = [
+            $listener2,
+            $listener3,
+            $listener1,
+        ];
+
+        $this->assertSame($expected, $handler->getListeners($event));
+    }
+
+    public function testGetListenersReturnsEmptyArrayWhenEventIsNotFound()
+    {
+        $handler = new EventHandler();
+        $this->assertSame([], $handler->getListeners('unknown event'));
+    }
+
+    public function testGetEventNameRaisesExceptionOnNonStringName()
+    {
+        $handler = new EventHandler();
+        $this->expectException(InvalidArgumentException::class);
+        $handler->getListeners(1);
+    }
+
+    public function testGetEventNameRaisesExceptionOnEmptyStringName()
+    {
+        $handler = new EventHandler();
+        $this->expectException(InvalidArgumentException::class);
+        $handler->getListeners('');
+    }
+
+    public function testTriggerInvokesListenersForGivenEvent()
+    {
+        $handler = new EventHandler();
+        $self = $this;
+
+        $event = 'some event';
+        $listener = function (EventInterface $event, EventHandlerInterface $handler) use ($self) {
+            $self->assertEquals(1, count($handler->getListeners($event)));
+        };
+
+        $handler->addListener($event, $listener);
+        $handler->trigger($event);
+    }
+
+    public function testTriggerRaisesExceptionOnEmptyEventName()
+    {
+        $handler = new EventHandler();
+        $this->expectException(InvalidArgumentException::class);
+        $handler->trigger('');
+    }
+
+    public function testTriggerRaisesExceptionOnNotIntanceOfEventInterface()
+    {
+        $handler = new EventHandler();
+        $this->expectException(InvalidArgumentException::class);
+        $handler->trigger(new \stdClass());
+    }
 }
