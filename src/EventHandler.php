@@ -3,7 +3,7 @@
 /**
  * Phower Events
  *
- * @version 0.0.0
+ * @version 1.0.0
  * @link https://github.com/phower/events Public Git repository
  * @copyright (c) 2015-2017, Pedro Ferreira <https://phower.com>
  * @license https://opensource.org/licenses/MIT MIT
@@ -138,7 +138,7 @@ class EventHandler implements EventHandlerInterface
      */
     protected function getEventName($event)
     {
-        $name = $event instanceof EventInterface ? $event->getName() : (string) $event;
+        $name = $event instanceof EventInterface ? $event->getName() : $event;
 
         if (!is_string($name) || '' === trim($name)) {
             throw new InvalidArgumentException('Event name must be a string and can\'t be empty.');
@@ -167,5 +167,4 @@ class EventHandler implements EventHandlerInterface
         krsort($this->listeners[$name]);
         $this->sorted[$name] = call_user_func_array('array_merge', $this->listeners[$name]);
     }
-
 }
