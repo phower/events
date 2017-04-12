@@ -24,8 +24,8 @@ class EventHandlerTest extends \PHPUnit_Framework_TestCase
         $self = $this;
 
         $event = 'some event';
-        $listener = function (EventInterface $event, EvntHandlerInterface $handler) use ($self) {
-            $self->assertEquals(1, count($event, $handler->getListeners($event)));
+        $listener = function (EventInterface $event, EventHandlerInterface $handler) use ($self) {
+            $self->assertEquals(1, count($handler->getListeners($event)));
         };
         $handler->addListener($event, $listener);
         $this->assertTrue(in_array($listener, $handler->getListeners($event)));
@@ -48,8 +48,8 @@ class EventHandlerTest extends \PHPUnit_Framework_TestCase
         $self = $this;
 
         $event = 'some event';
-        $listener = function (EventInterface $event, EvntHandlerInterface $handler) use ($self) {
-            $self->assertEquals(1, count($event, $handler->getListeners($event)));
+        $listener = function (EventInterface $event, EventHandlerInterface $handler) use ($self) {
+            $self->assertEquals(1, count($handler->getListeners($event)));
         };
         $handler->addListener($event, $listener);
         $this->assertTrue(in_array($listener, $handler->getListeners($event)));
@@ -64,8 +64,8 @@ class EventHandlerTest extends \PHPUnit_Framework_TestCase
         $self = $this;
 
         $event = 'some event';
-        $listener = function (EventInterface $event, EvntHandlerInterface $handler) use ($self) {
-            $self->assertEquals(1, count($event, $handler->getListeners($event)));
+        $listener = function (EventInterface $event, EventHandlerInterface $handler) use ($self) {
+            $self->assertEquals(1, count($handler->getListeners($event)));
         };
 
         $handler->addListener($event, $listener);
@@ -73,6 +73,20 @@ class EventHandlerTest extends \PHPUnit_Framework_TestCase
 
         $handler->removeListener('other event', $listener);
         $this->assertEquals(1, count($handler->getListeners()));
+    }
+
+    public function testTriggerMustInvokeListenerWithEventAndHandlerAsArguments()
+    {
+        $handler = new EventHandler();
+        $self = $this;
+
+        $event = 'some event';
+        $listener = function (EventInterface $event, EventHandlerInterface $handler) use ($self) {
+            $self->assertEquals(1, count($handler->getListeners($event)));
+        };
+
+        $handler->addListener($event, $listener);
+        $handler->trigger($event);
     }
 
 }
