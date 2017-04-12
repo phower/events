@@ -59,6 +59,14 @@ $handler->addListener('dummy', 'MyEventListener::onDummyEvent');
 $handler->trigger('dummy');
 ```
 
+### Container aware handlers
+
+When a [Container](https://github.com/phower/container) is part of an application it may be useful to automatically pass 
+it across the listeners.
+
+For this situation we can switch to an instance of [ContainerAwareEventHandlerInterface](src/ContainerAwareEventHandlerInterface.php) 
+and make our listeners also instances of [ContainerAwareInterface](https://github.com/phower/container/blob/master/src/ContainerAwareInterface.php).
+
 Running Tests
 -------------
 
